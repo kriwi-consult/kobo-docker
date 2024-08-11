@@ -64,6 +64,24 @@ services:
         aliases:
           - enketo_express
 
+  bmis:
+    networks:
+      kobo-be-network:
+        aliases:
+          - bmis
+
+  bmis_worker:
+    networks:
+      kobo-be-network:
+        aliases:
+          - bmis_worker
+
+  bmis_beat:
+    networks:
+      kobo-be-network:
+        aliases:
+          - bmis_beat
+
 networks:
   kobo-be-network:
     external:

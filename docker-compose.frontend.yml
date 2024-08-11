@@ -119,6 +119,98 @@ services:
         aliases:
           - enketo_express
           - enketo_express.internal
+  bmis:
+    #    image: docker.pkg.github.com/matrix-softech/bmis/bmis:v2.0
+    build:
+      context: ../bmis
+      dockerfile: ../bmis/Dockerfile
+    hostname: bmis
+
+    env_file:
+      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/databases.txt
+      - ../kobo-env/envfiles/aws.txt
+      - ../kobo-env/envfiles/external_services.txt
+      - ../kobo-env/envfiles/kobocat.txt
+      - ../kobo-env/envfiles/nginx.txt
+      - ../kobo-env/envfiles/smtp.txt
+    sysctls:
+      - net.core.somaxconn=2048
+    volumes:
+      - ../bmis/:/code/
+      - ../bmis/static/:/code/static/
+      - ./.vols/static/bmis:/code/static/
+      - ./log/bmis:/code/logs/
+      - ./.vols/bmis_media:/code/media/
+      - ./.vols/kpi_media:/code/media/kpi_media/
+      - ./sock/:/sock/
+      - ./.vols/kobocat_media_uploads:/code/media/kobocat_media/
+    restart: always
+    ports:
+      - 8000:8000
+    networks:
+      kobo-fe-network:
+        aliases:
+          - bmis
+          - bmis.docker.container
+
+  bmis_worker:
+    image: docker.pkg.github.com/matrix-softech/bmis/bmis:v2.0
+    hostname: bmis
+    env_file:
+      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/databases.txt
+      - ../kobo-env/envfiles/aws.txt
+      - ../kobo-env/envfiles/external_services.txt
+      - ../kobo-env/envfiles/kobocat.txt
+      - ../kobo-env/envfiles/nginx.txt
+      - ../kobo-env/envfiles/smtp.txt
+    sysctls:
+      - net.core.somaxconn=2048
+    volumes:
+      - ../bmis/:/code/
+      - ../bmis/static/:/code/static/
+      - ./.vols/static/bmis:/code/static/
+      - ./log/bmis:/code/logs/
+      - ./.vols/bmis_media:/code/media/
+      - ./.vols/kpi_media:/code/media/kpi_media/
+      - ./sock/:/sock/
+      - ./.vols/kobocat_media_uploads:/code/media/kobocat_media/
+    restart: always
+    networks:
+      kobo-fe-network:
+        aliases:
+          - bmis_worker
+          - bmis_worker.docker.container
+
+  bmis_beat:
+    image: docker.pkg.github.com/matrix-softech/bmis/bmis:v2.0
+    hostname: bmis
+    env_file:
+      - ../kobo-env/envfile.txt
+      - ../kobo-env/envfiles/databases.txt
+      - ../kobo-env/envfiles/aws.txt
+      - ../kobo-env/envfiles/external_services.txt
+      - ../kobo-env/envfiles/kobocat.txt
+      - ../kobo-env/envfiles/nginx.txt
+      - ../kobo-env/envfiles/smtp.txt
+    sysctls:
+      - net.core.somaxconn=2048
+    volumes:
+      - ../bmis/:/code/
+      - ../bmis/static/:/code/static/
+      - ./.vols/static/bmis:/code/static/
+      - ./log/bmis:/code/logs/
+      - ./.vols/bmis_media:/code/media/
+      - ./.vols/kpi_media:/code/media/kpi_media/
+      - ./sock/:/sock/
+      - ./.vols/kobocat_media_uploads:/code/media/kobocat_media/
+    restart: always
+    networks:
+      kobo-fe-network:
+        aliases:
+          - bmis_beat
+          - bmis_beat.docker.container
 
 networks:
   kobo-fe-network:

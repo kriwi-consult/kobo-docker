@@ -2,6 +2,10 @@
 
 charset     utf-8;
 
+upstream bmis_server {
+    server unix:///sock/bmis.sock
+}
+
 # Default configuration
 server {
     listen 80 default_server;
@@ -114,5 +118,42 @@ server {
     location / {
         proxy_pass  http://enketo_express:8005/;
         proxy_redirect off;
+    }
+}
+
+# BMIS HTTP.
+server {
+    listen 80;
+    #add_header 'Access-Control-Allow-Origin' '*';
+    server_name ${BMIS_PUBLIC_SUBDOMAIN}.${PUBLIC_DOMAIN_NAME} ${BMIS_PUBLIC_SUBDOMAIN}.${INTERNAL_DOMAIN_NAME};
+
+    include /etc/nginx/includes/server_directive_common.conf;
+
+    access_log  /var/log/nginx/bmis.access.log with_host;
+    error_log   /var/log/nginx/bmis.error.log;
+
+    location / {
+        # Proxy through uWSGI.
+        #${kpi_include_uwsgi_pass}
+
+        # Debug proxying directly to container.
+        #${kpi_include_proxy_pass}
+        #proxy_pass http://bmis:8000;
+        uwsgi_pass bmis_server;
+        include uwsgi_params;
+        proxy_set_header Host $host:$proxy_port;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_temp_file_write_size 64k;
+        proxy_connect_timeout 10080s;
+        proxy_send_timeout 10080;
+        proxy_read_timeout 10080;
+        proxy_redirect off;
+        proxy_buffer_size 64k;
+        proxy_buffers 16 32k;
+        proxy_busy_buffers_size 64k;
+        proxy_request_buffering off;
+        proxy_buffering off;
     }
 }

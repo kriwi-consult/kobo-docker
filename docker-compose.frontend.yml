@@ -120,7 +120,7 @@ services:
           - enketo_express
           - enketo_express.internal
   bmis:
-    image: docker.pkg.github.com/matrix-softech/bmis/bmis:v3.3
+    image: docker.pkg.github.com/matrix-softech/bmis/bmis:v3.4
     hostname: bmis
 
     env_file:
@@ -151,7 +151,7 @@ services:
           - bmis.docker.container
 
   bmis_worker:
-    image: docker.pkg.github.com/matrix-softech/bmis/bmis:v3.3
+    image: docker.pkg.github.com/matrix-softech/bmis/bmis:v3.4
     hostname: bmis
     env_file:
       - ../kobo-env/envfiles/bmis.txt
@@ -179,7 +179,7 @@ services:
           - bmis_worker.docker.container
 
   bmis_beat:
-    image: docker.pkg.github.com/matrix-softech/bmis/bmis:v3.3
+    image: docker.pkg.github.com/matrix-softech/bmis/bmis:v3.4
     hostname: bmis
     env_file:
       - ../kobo-env/envfiles/bmis.txt
